@@ -7,7 +7,9 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
     const [status, setStatus] = useState('loading'); // loading, loaded, error
 
     const hymn = hymnsData.find(h => h.number === hymnNumber);
-    const imagePath = hymn ? hymn.imagePath : `/hymns/${hymnNumber}.jpg`;
+    const rawPath = hymn ? hymn.imagePath : `/hymns/${hymnNumber}.jpg`;
+    // Resolve base URL for subdirectory deployment
+    const imagePath = `${import.meta.env.BASE_URL}${rawPath.startsWith('/') ? rawPath.slice(1) : rawPath}`;
 
     const handleLoad = () => setStatus('loaded');
     const handleError = () => setStatus('error');
@@ -15,35 +17,38 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
     // Reset status when hymnNumber changes is handled by the key prop on the img or wrapper
 
 
+    // Helper to resolve image path with base URL
+    const getImagePath = (path) => {
+        if (!path) return '';
+        // If path starts with /, remove it to append to base (which usually ends with /)
+        const smoothPath = path.startsWith('/') ? path.slice(1) : path;
+        return `${import.meta.env.BASE_URL}${smoothPath}`;
+    };
+
     return (
-        <div className="hymn-viewer-container">
-            {/* Glass Header */}
-            <header className="viewer-header">
-                <button onClick={onClose} className="nav-icon-btn" aria-label="Back">
+        <div className={`hymn-viewer ${isMenuOpen ? 'menu-open' : ''}`} onClick={handleTap}>
+            <header className={`viewer-header ${showHeader ? 'visible' : 'hidden'}`}>
+                <button className="back-btn" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                     <ChevronLeft size={24} />
                 </button>
-                <div className="hymn-indicator">
-                    <span className="number">{hymnNumber}장</span>
-                    <span className="label">Hymn {hymnNumber}</span>
-                </div>
-                <button onClick={onToggleSidebar} className="nav-icon-btn" aria-label="Menu">
+                <h2 className="header-title">
+                    <span className="hymn-number">No. {hymn.number}</span>
+                    <span className="hymn-title-text">{hymn.title}</span>
+                </h2>
+                <button className="menu-btn" onClick={(e) => { e.stopPropagation(); onToggleSidebar(); }}>
                     <Menu size={24} />
                 </button>
             </header>
 
-            {/* Main Content */}
-            <div className="viewer-content">
-                {status === 'loading' && <div className="loading-spinner">Loading Hymn...</div>}
-                {status === 'error' && <div className="error-msg">Hymn not found</div>}
-
+            <div className="hymn-content">
+                {loading && <div className="loading-spinner">Loading...</div>}
+                {error && <div className="error-message">Hymn not found</div>}
                 <img
-                    key={hymnNumber}
-                    src={imagePath}
-                    alt={`Hymn ${hymnNumber}`}
-                    className="hymn-image"
+                    src={getImagePath(hymn.imagePath)}
+                    alt={hymn.title}
+                    className={`hymn-image ${loading ? 'hidden' : ''}`}
                     onLoad={handleLoad}
                     onError={handleError}
-                    style={{ display: status === 'loaded' ? 'block' : 'none' }}
                 />
             </div>
 
