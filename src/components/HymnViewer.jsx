@@ -18,7 +18,7 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
 
 
     return (
-        <div className="hymn-viewer">
+        <div className="hymn-viewer-container">
             <header className="viewer-header">
                 <button className="back-btn" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                     <ChevronLeft size={24} />
