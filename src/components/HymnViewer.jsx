@@ -62,7 +62,7 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
                 </button>
                 <div className="hymn-indicator">
                     <span className="number">{hymnNumber}장</span>
-                    <span className="label">Hymn {hymnNumber}</span>
+
                 </div>
                 <button className="menu-btn" onClick={(e) => { e.stopPropagation(); onToggleSidebar(); }}>
                     <Menu size={24} />
