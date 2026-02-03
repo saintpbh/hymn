@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import HymnList from './components/HymnList';
 import HymnViewer from './components/HymnViewer';
@@ -10,7 +10,18 @@ import './App.css';
 const hymnsData = Array.isArray(hymnsDataRaw) && hymnsDataRaw.length > 0 ? hymnsDataRaw : [];
 
 function App() {
-  const [currentHymn, setCurrentHymn] = useState(null);
+  const [currentHymn, setCurrentHymn] = useState(() => {
+    const saved = localStorage.getItem('lastHymn');
+    return saved ? parseInt(saved, 10) : null;
+  });
+
+  useEffect(() => {
+    if (currentHymn) {
+      localStorage.setItem('lastHymn', currentHymn);
+    } else {
+      localStorage.removeItem('lastHymn');
+    }
+  }, [currentHymn]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const data = hymnsData;
 

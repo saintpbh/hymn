@@ -1,35 +1,47 @@
+
 import json
+import os
 
-titles_file = "src/data/hymn_titles.json"
+# Configuration
+DATA_FILE = "src/data/hymns.json"
+NEW_TITLES_FILE = "scripts/namu_titles.json"
 
-updates = {
-    630: "진리와 생명 되신 주",
-    631: "우리 기도를",
-    632: "주여 주여 우리를",
-    633: "나의 하나님 받으소서",
-    634: "모든 것이 주께로부터",
-    635: "하늘에 계신(주기도문)",
-    636: "하늘에 계신(주기도문)",
-    637: "주님 우리의 마음을 여시어",
-    638: "주 너를 지키시고",
-    639: "주 함께 하소서",
-    640: "아멘",
-    641: "아멘",
-    642: "아멘",
-    643: "아멘",
-    644: "아멘",
-    645: "아멘"
-}
+def update_titles():
+    # Load existing hymns data
+    if not os.path.exists(DATA_FILE):
+        print(f"Error: {DATA_FILE} not found.")
+        return
 
-with open(titles_file, 'r', encoding='utf-8') as f:
-    titles = json.load(f)
+    with open(DATA_FILE, 'r', encoding='utf-8') as f:
+        hymns_db = json.load(f)
 
-for item in titles:
-    n = item['number']
-    if n in updates:
-        item['title'] = updates[n]
+    # Load new titles
+    if not os.path.exists(NEW_TITLES_FILE):
+        print(f"Error: {NEW_TITLES_FILE} not found.")
+        return
 
-with open(titles_file, 'w', encoding='utf-8') as f:
-    json.dump(titles, f, ensure_ascii=False, indent=2)
+    with open(NEW_TITLES_FILE, 'r', encoding='utf-8') as f:
+        new_titles = json.load(f)
+    
+    # Create a lookup map for new titles
+    title_map = {item['number']: item['title'] for item in new_titles}
 
-print("Updated titles for 630-645")
+    updated_count = 0
+    
+    # Update titles in hymns_db
+    for hymn in hymns_db:
+        number = hymn['number']
+        if number in title_map:
+            new_title = title_map[number]
+            if hymn['title'] != new_title:
+                hymn['title'] = new_title
+                updated_count += 1
+    
+    # Save updated DB
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(hymns_db, f, ensure_ascii=False, indent=2)
+    
+    print(f"Successfully updated {updated_count} hymn titles in {DATA_FILE}")
+
+if __name__ == "__main__":
+    update_titles()
