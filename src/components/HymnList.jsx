@@ -6,13 +6,40 @@ import { Search } from 'lucide-react';
 const HymnList = ({ hymnsData, onSelectHymn }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
+    const handleSearchChange = (e) => {
+        const val = e.target.value;
+        const lastChar = val.slice(-1);
+
+        // Handle special dialer keys
+        if (lastChar === '*' || lastChar === '#') {
+            const numberStr = val.slice(0, -1);
+            const number = parseInt(numberStr, 10);
+
+            // Visual feedback: show '장'
+            setSearchTerm(numberStr + '장');
+
+            // Find match and navigate
+            if (!isNaN(number)) {
+                onSelectHymn(number);
+            }
+            return;
+        }
+
+        setSearchTerm(val);
+    };
+
     const filteredHymns = useMemo(() => {
         if (!searchTerm) return hymnsData;
         const lower = searchTerm.toLowerCase();
-        return hymnsData.filter(h =>
-            h.number.toString().includes(lower) ||
-            h.title.toLowerCase().includes(lower)
-        );
+        // Clean numeric search for better matching (ignore '장')
+        const numericSearch = lower.replace(/[^0-9]/g, '');
+
+        return hymnsData.filter(h => {
+            // If term is purely numeric (or "123장"), match number exactly or partially
+            if (numericSearch && h.number.toString().includes(numericSearch)) return true;
+            // Title match
+            return h.title.toLowerCase().includes(lower);
+        });
     }, [hymnsData, searchTerm]);
 
     return (
@@ -21,10 +48,10 @@ const HymnList = ({ hymnsData, onSelectHymn }) => {
                 <div className="search-input-wrapper">
                     <Search size={20} className="search-icon" />
                     <input
-                        type="text"
-                        placeholder="Search hymn number or title..."
+                        type="tel"
+                        placeholder="번호 입력 후 * 또는 # 누르면 이동"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
                         className="search-input"
                     />
                 </div>

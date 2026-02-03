@@ -5,6 +5,7 @@ import json
 import time
 import requests
 import re
+import sys
 from urllib.parse import unquote
 
 # Configuration
@@ -35,23 +36,34 @@ hymns_db = []
 processed_numbers = set()
 
 def download_image(url, number):
-    try:
-        filepath = os.path.join(OUTPUT_DIR, f"{number}.jpg")
-        if os.path.exists(filepath):
-            return f"/hymns/{number}.jpg"
+    # List of url variants to try
+    urls_to_try = []
+    
+    base_url = url.split('?')[0]
+    
+    # Priority 1: High res
+    urls_to_try.append(base_url + "?type=w1200")
+    # Priority 2: Medium/Originalish
+    urls_to_try.append(base_url + "?type=w966")
+    # Priority 3: As is (might be w2 thumbnail but better than nothing)
+    urls_to_try.append(url)
+    # Priority 4: Clean (sometimes gives raw)
+    urls_to_try.append(base_url)
 
-        # high quality param if needed
-        clean_url = url.split('?')[0] + "?type=w1200"
-        
-        r = requests.get(clean_url, timeout=10)
-        r.raise_for_status()
-        with open(filepath, 'wb') as f:
-            f.write(r.content)
-        print(f"Downloaded hymn {number}")
-        return f"/hymns/{number}.jpg"
-    except Exception as e:
-        print(f"Failed to download {number}: {e}")
-        return None
+    for target_url in urls_to_try:
+        try:
+            r = requests.get(target_url, timeout=10)
+            if r.status_code == 200:
+                filepath = os.path.join(OUTPUT_DIR, f"{number}.jpg")
+                with open(filepath, 'wb') as f:
+                    f.write(r.content)
+                # print(f"Downloaded hymn {number}")
+                return f"/hymns/{number}.jpg"
+        except Exception:
+            pass
+    
+    print(f"Failed to download {number} after trying variants")
+    return None
 
 def run():
     with sync_playwright() as p:
@@ -86,18 +98,29 @@ def run():
                     src = item['src']
                     alt = item['alt']
                     
-                    if not src or "postfiles.pstatic.net" not in src:
+                    if not src or "pstatic.net" not in src:
+                        # Log sampled skips
+                        # if "pstatic" not in str(src): print(f"Skip non-pstatic: {src}") 
                         continue
                         
                     if "sticker" in src or "profile" in src:
                         continue
-                    
-                    # Try to parse number
+
+                    # VERBOSE DEBUG
+                    print(f"CHECKING: {src[:60]}")
+                    sys.stdout.flush()
+
+                    # Try to parse number from Alt
                     match = re.search(r'(\d+)장', alt)
+                    
                     if not match:
                         try:
-                            decoded_src = unquote(src)
-                            match = re.search(r'(\d+)장', decoded_src)
+                            # Direct regex on the SRC for the pattern /001%EC%9E%A5 (001장)
+                            # Matches /dddadEncodedJang or /ddd장
+                            match = re.search(r'/(\d{1,3})(?:%EC%9E%A5|장)', src)
+                            if not match:
+                                decoded_src = unquote(src)
+                                match = re.search(r'/(\d{1,3})(?:장|_)', decoded_src)
                         except:
                             pass
                     
@@ -108,6 +131,8 @@ def run():
                             continue
                             
                         # Download immediately
+                        print(f"Downloading {number} from {src[:40]}...")
+                        sys.stdout.flush()
                         local_path = download_image(src, number)
                         
                         if local_path:
@@ -118,8 +143,9 @@ def run():
                                 "imagePath": local_path
                             })
                     else:
-                        # Fallback for some hard cases if any
-                        pass
+                        # Log misses to help debug
+                         if 'w1200' in src and 'blogthumb' in src:
+                             print(f"MISS from {src}")
 
             except Exception as e:
                 print(f"Error processing {url}: {e}")
