@@ -17,38 +17,32 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
     // Reset status when hymnNumber changes is handled by the key prop on the img or wrapper
 
 
-    // Helper to resolve image path with base URL
-    const getImagePath = (path) => {
-        if (!path) return '';
-        // If path starts with /, remove it to append to base (which usually ends with /)
-        const smoothPath = path.startsWith('/') ? path.slice(1) : path;
-        return `${import.meta.env.BASE_URL}${smoothPath}`;
-    };
-
     return (
-        <div className={`hymn-viewer ${isMenuOpen ? 'menu-open' : ''}`} onClick={handleTap}>
-            <header className={`viewer-header ${showHeader ? 'visible' : 'hidden'}`}>
+        <div className="hymn-viewer">
+            <header className="viewer-header">
                 <button className="back-btn" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                     <ChevronLeft size={24} />
                 </button>
-                <h2 className="header-title">
-                    <span className="hymn-number">No. {hymn.number}</span>
-                    <span className="hymn-title-text">{hymn.title}</span>
-                </h2>
+                <div className="hymn-indicator">
+                    <span className="number">{hymnNumber}장</span>
+                    <span className="label">Hymn {hymnNumber}</span>
+                </div>
                 <button className="menu-btn" onClick={(e) => { e.stopPropagation(); onToggleSidebar(); }}>
                     <Menu size={24} />
                 </button>
             </header>
 
-            <div className="hymn-content">
-                {loading && <div className="loading-spinner">Loading...</div>}
-                {error && <div className="error-message">Hymn not found</div>}
+            <div className="viewer-content">
+                {status === 'loading' && <div className="loading-spinner">Loading Hymn...</div>}
+                {status === 'error' && <div className="error-msg">Hymn not found</div>}
                 <img
-                    src={getImagePath(hymn.imagePath)}
-                    alt={hymn.title}
-                    className={`hymn-image ${loading ? 'hidden' : ''}`}
+                    key={hymnNumber}
+                    src={imagePath}
+                    alt={`Hymn ${hymnNumber}`}
+                    className={`hymn-image ${status === 'loading' ? 'hidden' : ''}`}
                     onLoad={handleLoad}
                     onError={handleError}
+                    style={{ display: status === 'loaded' ? 'block' : 'none' }}
                 />
             </div>
 
