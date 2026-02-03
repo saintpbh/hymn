@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './HymnViewer.css';
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 
@@ -14,11 +14,48 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
     const handleLoad = () => setStatus('loaded');
     const handleError = () => setStatus('error');
 
+    // Navigator Visibility Logic
+    const [isNavVisible, setIsNavVisible] = useState(true);
+    const timerRef = useRef(null);
+
+    const resetTimer = useCallback(() => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        if (isNavVisible) {
+            timerRef.current = setTimeout(() => {
+                setIsNavVisible(false);
+            }, 5000);
+        }
+    }, [isNavVisible]);
+
+    useEffect(() => {
+        resetTimer();
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, [resetTimer]);
+
+    const handleContainerClick = () => {
+        setIsNavVisible(prev => !prev);
+    };
+
+    const handleNavAction = (e, action) => {
+        if (e) e.stopPropagation();
+        setIsNavVisible(true);
+        // We need to manually trigger resetTimer logic because calling setIsNavVisible(true) 
+        // won't trigger the effect if it's already true.
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => {
+            setIsNavVisible(false);
+        }, 5000);
+
+        if (action) action();
+    };
+
     // Reset status when hymnNumber changes is handled by the key prop on the img or wrapper
 
 
     return (
-        <div className="hymn-viewer-container">
+        <div className="hymn-viewer-container" onClick={handleContainerClick}>
             <header className="viewer-header">
                 <button className="back-btn" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                     <ChevronLeft size={24} />
@@ -47,11 +84,19 @@ const HymnViewer = ({ hymnNumber, onNext, onPrev, onToggleSidebar, hymnsData, on
             </div>
 
             {/* Floating Navigation (Bottom) */}
-            <div className="floating-nav">
-                <button onClick={onPrev} disabled={hymnNumber <= 1} className="float-btn">
+            <div className={`floating-nav ${isNavVisible ? '' : 'nav-hidden'}`} onClick={(e) => e.stopPropagation()}>
+                <button
+                    onClick={(e) => handleNavAction(e, onPrev)}
+                    disabled={hymnNumber <= 1}
+                    className="float-btn"
+                >
                     <ChevronLeft size={28} />
                 </button>
-                <button onClick={onNext} disabled={hymnNumber >= 645} className="float-btn">
+                <button
+                    onClick={(e) => handleNavAction(e, onNext)}
+                    disabled={hymnNumber >= 645}
+                    className="float-btn"
+                >
                     <ChevronRight size={28} />
                 </button>
             </div>

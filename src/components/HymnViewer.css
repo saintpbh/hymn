@@ -110,6 +110,14 @@
     box-shadow: var(--shadow-soft);
     border: 1px solid rgba(255, 255, 255, 0.4);
     z-index: 90;
+    transition: opacity 0.3s ease, pointer-events 0.3s ease;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.floating-nav.nav-hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .float-btn {
