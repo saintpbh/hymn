@@ -1,10 +1,17 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import './HymnList.css';
 import { Search, Menu } from 'lucide-react';
 
 const HymnList = ({ hymnsData, onSelectHymn, onToggleSidebar }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
 
     const handleSearchChange = (e) => {
         const val = e.target.value;
@@ -48,6 +55,7 @@ const HymnList = ({ hymnsData, onSelectHymn, onToggleSidebar }) => {
                 <div className="search-input-wrapper">
                     <Search size={20} className="search-icon" />
                     <input
+                        ref={inputRef}
                         type="tel"
                         placeholder="번호 입력 후 * 또는 # 누르면 이동"
                         value={searchTerm}
