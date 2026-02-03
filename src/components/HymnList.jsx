@@ -57,7 +57,7 @@ const HymnList = ({ hymnsData, onSelectHymn, onToggleSidebar }) => {
                     <input
                         ref={inputRef}
                         type="tel"
-                        placeholder="번호 입력 후 * 또는 # 누르면 이동"
+                        placeholder="장 또는 가사로 검색하세요."
                         value={searchTerm}
                         onChange={handleSearchChange}
                         className="search-input"
