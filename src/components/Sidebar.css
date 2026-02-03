@@ -5,11 +5,16 @@
     right: 0;
     bottom: 0;
     background-color: rgba(45, 45, 45, 0.4);
-    /* Charcoal dim */
     backdrop-filter: blur(4px);
     z-index: 999;
     opacity: 0;
-    animation: fadeIn 0.3s forwards;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .sidebar {
