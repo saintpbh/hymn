@@ -44,16 +44,10 @@ function App() {
         />
       ) : (
         <>
-          {/* Header for List View */}
-          <header className="main-header">
-            <div className="logo">Hymn365</div>
-            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
-              Menu
-            </button>
-          </header>
           <HymnList
             hymnsData={data}
             onSelectHymn={handleSelectHymn}
+            onToggleSidebar={() => setIsSidebarOpen(true)}
           />
         </>
       )}

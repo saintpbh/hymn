@@ -1,9 +1,9 @@
 
 import React, { useState, useMemo } from 'react';
 import './HymnList.css';
-import { Search } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 
-const HymnList = ({ hymnsData, onSelectHymn }) => {
+const HymnList = ({ hymnsData, onSelectHymn, onToggleSidebar }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearchChange = (e) => {
@@ -55,6 +55,19 @@ const HymnList = ({ hymnsData, onSelectHymn }) => {
                         className="search-input"
                     />
                 </div>
+                <button
+                    onClick={onToggleSidebar}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        marginLeft: '12px',
+                        cursor: 'pointer',
+                        color: 'var(--text-charcoal)'
+                    }}
+                    aria-label="Menu"
+                >
+                    <Menu size={24} />
+                </button>
             </div>
 
             <div className="list-content">

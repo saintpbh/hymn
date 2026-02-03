@@ -1,94 +1,120 @@
 .hymn-list-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background: hsl(var(--color-bg-base));
+    padding-top: var(--header-height);
+    min-height: 100vh;
+    background-color: var(--bg-paper);
 }
 
+/* Glassmorphism Search Bar */
 .search-bar-container {
-    padding: 16px;
-    background: white;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 10;
-    border-bottom: 1px solid hsl(var(--color-border));
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: var(--glass-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 100;
+    box-shadow: var(--shadow-soft);
 }
 
 .search-input-wrapper {
     position: relative;
+    width: 100%;
     max-width: 600px;
-    margin: 0 auto;
 }
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: hsl(var(--color-text-muted));
+    color: var(--accent-gold);
+    opacity: 0.8;
 }
 
 .search-input {
-    padding-left: 40px !important;
+    width: 100%;
+    padding: 14px 14px 14px 48px;
+    border-radius: 30px;
+    /* Pill shape */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: var(--surface-white);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    color: var(--text-charcoal);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
 }
 
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(199, 160, 100, 0.15);
+}
+
+/* List Content */
 .list-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px 0;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .hymn-items {
     list-style: none;
-    padding: 0;
-    margin: 0;
-    max-width: 800px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .hymn-items li {
-    padding: 0 16px;
+    background: var(--surface-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.hymn-items li:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
 }
 
 .hymn-item {
     display: flex;
     align-items: center;
-    padding: 16px;
-    background: white;
-    margin-bottom: 8px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid transparent;
-}
-
-.hymn-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: hsl(var(--color-primary) / 0.2);
+    padding: 16px 20px;
 }
 
 .hymn-number {
-    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    font-size: 20px;
     font-weight: 700;
-    color: hsl(var(--color-primary));
-    width: 50px;
-    text-align: center;
-    margin-right: 16px;
-    background: hsl(var(--color-primary) / 0.1);
-    padding: 8px 0;
-    border-radius: 8px;
+    color: var(--accent-gold);
+    width: 60px;
+    flex-shrink: 0;
+    letter-spacing: -0.5px;
 }
 
 .hymn-title-text {
-    font-size: 1.1rem;
-    color: hsl(var(--color-text-main));
+    font-family: var(--font-sans);
+    font-size: 16px;
     font-weight: 500;
+    color: var(--text-charcoal);
 }
 
 .empty-state {
     text-align: center;
-    padding: 40px;
-    color: hsl(var(--color-text-muted));
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-style: italic;
 }
