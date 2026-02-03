@@ -1,3 +1,4 @@
+/* Sidebar Overlay */
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -10,6 +11,169 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Sidebar Panel */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 85vw;
+    background: rgba(249, 248, 244, 0.95);
+    /* Warm paper with high opacity */
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: -10px 0 50px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+/* Header */
+.sidebar-header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-header h2 {
+    font-size: 22px;
+    color: var(--text-charcoal);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-charcoal);
+}
+
+/* Content Area */
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    scrollbar-width: thin;
+    /* Firefox */
+}
+
+/* Accordion Group */
+.range-group {
+    background: var(--surface-white);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+}
+
+.range-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.range-label {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-charcoal);
+}
+
+.range-btn.active {
+    background: rgba(199, 160, 100, 0.08);
+}
+
+.range-btn.active .range-label {
+    color: var(--accent-gold);
+}
+
+/* Hymn Grid */
+.hymn-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 0 16px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hymn-grid.expanded {
+    max-height: 2000px;
+    /* Enough to fit 100 items */
+    opacity: 1;
+    padding: 16px;
+    padding-top: 5px;
+}
+
+/* Individual Hymn Buttons */
+.hymn-num-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #FFF;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.hymn-num-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+}
+
+.hymn-num-btn.current {
+    background: var(--accent-gold);
+    color: white;
+    border-color: var(--accent-gold);
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(199, 160, 100, 0.4);
 }
 
 .sidebar-overlay.open {

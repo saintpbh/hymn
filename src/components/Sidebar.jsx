@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import './Sidebar.css';
 
 const RANGES = [
@@ -37,7 +38,9 @@ const Sidebar = ({ onSelectHymn, currentHymnNumber, isOpen, onClose }) => {
             <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <div className="sidebar-header">
                     <h2>Hymn Index</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button className="close-btn" onClick={onClose}>
+                        <X size={24} />
+                    </button>
                 </div>
 
                 <div className="sidebar-content">
@@ -47,8 +50,8 @@ const Sidebar = ({ onSelectHymn, currentHymnNumber, isOpen, onClose }) => {
                                 className={`range-btn ${expandedRange === range.label ? 'active' : ''}`}
                                 onClick={() => toggleRange(range.label)}
                             >
-                                <span>{range.label}</span>
-                                <span className="arrow">{expandedRange === range.label ? '▲' : '▼'}</span>
+                                <span className="range-label">{range.label}</span>
+                                {expandedRange === range.label ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                             </button>
 
                             <div className={`hymn-grid ${expandedRange === range.label ? 'expanded' : ''}`}>
