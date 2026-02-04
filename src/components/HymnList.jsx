@@ -5,20 +5,26 @@ import { Search, Menu } from 'lucide-react';
 
 const HymnList = ({ hymnsData, onSelectHymn, onToggleSidebar }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [searchMode, setSearchMode] = useState('numeric'); // 'numeric' or 'text'
     const inputRef = useRef(null);
 
     useEffect(() => {
         if (inputRef.current) {
             inputRef.current.focus();
         }
-    }, []);
+    }, [searchMode]); // Re-focus when mode changes
+
+    const toggleSearchMode = () => {
+        setSearchMode(prev => prev === 'numeric' ? 'text' : 'numeric');
+        setSearchTerm(''); // Clear search when switching modes
+    };
 
     const handleSearchChange = (e) => {
         const val = e.target.value;
         const lastChar = val.slice(-1);
 
-        // Handle special dialer keys
-        if (lastChar === '*' || lastChar === '#') {
+        // Handle special dialer keys only in numeric mode
+        if (searchMode === 'numeric' && (lastChar === '*' || lastChar === '#')) {
             const numberStr = val.slice(0, -1);
             const number = parseInt(numberStr, 10);
 
@@ -53,11 +59,22 @@ const HymnList = ({ hymnsData, onSelectHymn, onToggleSidebar }) => {
         <div className="hymn-list-container">
             <div className="search-bar-container">
                 <div className="search-input-wrapper">
+                    <button
+                        className="mode-toggle-btn"
+                        onClick={toggleSearchMode}
+                        aria-label={searchMode === 'numeric' ? "Switch to Text Search" : "Switch to Numeric Search"}
+                    >
+                        {searchMode === 'numeric' ? (
+                            <span className="mode-icon">123</span>
+                        ) : (
+                            <span className="mode-icon">가</span>
+                        )}
+                    </button>
                     <Search size={20} className="search-icon" />
                     <input
                         ref={inputRef}
-                        type="tel"
-                        placeholder="장 또는 가사로 검색하세요."
+                        type={searchMode === 'numeric' ? "tel" : "search"}
+                        placeholder={searchMode === 'numeric' ? "장 번호 입력" : "가사 또는 제목 검색"}
                         value={searchTerm}
                         onChange={handleSearchChange}
                         className="search-input"
